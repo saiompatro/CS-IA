@@ -266,7 +266,9 @@ const FinancesPage = () => {
   const calculateBudgetUsage = () => {
     if (!budget) return 0;
     const totalExpenses = calculateTotalExpenses();
-    return Math.min((totalExpenses / budget.amount) * 100, 100);
+    const totalEarnings = earnings.reduce((sum, earning) => sum + earning.amount, 0);
+    const netExpenses = Math.max(totalExpenses - totalEarnings, 0);
+    return Math.min((netExpenses / budget.amount) * 100, 100);
   };
 
   // Function to get month name
@@ -367,14 +369,22 @@ const FinancesPage = () => {
                       <h3 className="text-lg font-semibold text-green-900 mb-2">Total Expenses</h3>
                       <p className="text-3xl font-bold text-green-600">₹{calculateTotalExpenses().toLocaleString()}</p>
                       <p className="text-sm text-green-600">
-                        {budget.amount > 0 ? `${((calculateTotalExpenses() / budget.amount) * 100).toFixed(1)}%` : '0%'} of budget used
+                        {(() => {
+                          const totalEarnings = earnings.reduce((sum, earning) => sum + earning.amount, 0);
+                          const netExpenses = Math.max(calculateTotalExpenses() - totalEarnings, 0);
+                          return budget.amount > 0 ? `${((netExpenses / budget.amount) * 100).toFixed(1)}%` : '0%';
+                        })()} of budget used
                       </p>
                     </div>
 
                     <div className="bg-yellow-50 p-4 rounded-lg">
                       <h3 className="text-lg font-semibold text-yellow-900 mb-2">Remaining Budget</h3>
                       <p className="text-3xl font-bold text-yellow-600">
-                        ₹{Math.max(budget.amount - calculateTotalExpenses(), 0).toLocaleString()}
+                        {(() => {
+                          const totalEarnings = earnings.reduce((sum, earning) => sum + earning.amount, 0);
+                          const netExpenses = Math.max(calculateTotalExpenses() - totalEarnings, 0);
+                          return `₹${Math.max(budget.amount - netExpenses, 0).toLocaleString()}`;
+                        })()}
                       </p>
                     </div>
                   </div>

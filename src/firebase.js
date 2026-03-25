@@ -2,7 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from 'firebase/auth'
-import { getFirestore, enableIndexedDbPersistence, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { getStorage } from 'firebase/storage';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -41,18 +41,9 @@ console.log("Firestore initialized");
 const storage = getStorage(app);
 console.log("Storage initialized");
 
-// Enable offline persistence
-enableIndexedDbPersistence(db)
-  .then(() => {
-    console.log("Offline persistence enabled");
-  })
-  .catch((err) => {
-    if (err.code === 'failed-precondition') {
-      console.warn("Multiple tabs open, persistence can only be enabled in one tab at a time.");
-    } else if (err.code === 'unimplemented') {
-      console.warn("The current browser does not support persistence");
-    }
-  });
+// Offline persistence is enabled by default in Firebase v9+
+// No need to manually enable it - it's automatic
+console.log("Firebase initialized with automatic offline persistence");
 
 // Function to check if a user is an admin
 export const isUserAdmin = async (userId) => {
